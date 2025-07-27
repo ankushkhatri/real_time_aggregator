@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Live Crypto Prices</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            padding: 30px;
+            color: #333;
+        }
+
+        h2 {
+            color: #444;
+        }
+
+        .price {
+            font-size: 24px;
+            margin: 15px 0;
+        }
+
+        .green {
+            color: green;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h2>Live Crypto Prices</h2>
+        <div class="price">BTC: <span id="btc-price">Loading...</span></div>
+        <div class="price">ETH: <span id="eth-price">Loading...</span></div>
+        <div class="price">BNB: <span id="bnb-price">Loading...</span></div>
+    </div>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:5000/ws/live-data/");
+
+        const previousPrices = {
+            BTCUSDT: null,
+            ETHUSDT: null,
+            BNBUSDT: null
+        };
+
+        function updatePrice(id, symbol, newPrice) {
+            const span = document.getElementById(id);
+            const oldPrice = previousPrices[symbol];
+
+            span.textContent = parseFloat(newPrice).toFixed(4);
+
+            if (oldPrice !== null) {
+                if (newPrice > oldPrice) {
+                    span.className = "green";
+                } else if (newPrice < oldPrice) {
+                    span.className = "red";
+                } else {
+                    span.className = "";
+                }
+            }
+
+            previousPrices[symbol] = newPrice;
+        }
+
+        socket.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            updatePrice("btc-price", "BTCUSDT", data.BTCUSDT);
+            updatePrice("eth-price", "ETHUSDT", data.ETHUSDT);
+            updatePrice("bnb-price", "BNBUSDT", data.BNBUSDT);
+        };
+    </script>
+</body>
+
+</html>
