@@ -1,79 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-Time Aggregator</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-brand">Aggregator</div>
+      <ul class="nav-links">
+        <li><a href="#" onclick="showSection('dashboard')">Dashboard</a></li>
+        <li><a href="#" onclick="showSection('sources')">Sources</a></li>
+        <li><a href="#" onclick="showSection('settings')">Settings</a></li>
+      </ul>
+      <button class="nav-toggle" onclick="toggleNav()">&#9776;</button>
+    </nav>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Live Crypto Prices</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f4f4;
-            padding: 30px;
-            color: #333;
-        }
+    <main>
+      <section id="dashboard" class="active">
+        <h1>Dashboard</h1>
+        <div id="crypto-prices" class="feed-container">
+          <h2>Live Crypto Prices</h2>
+          <div class="crypto-row">
+            <span>BTC/USDT:</span>
+            <span id="btc-price">--</span>
+          </div>
+          <div class="crypto-row">
+            <span>ETH/USDT:</span>
+            <span id="eth-price">--</span>
+          </div>
+          <div class="crypto-row">
+            <span>BNB/USDT:</span>
+            <span id="bnb-price">--</span>
+          </div>
+        </div>
+        <button onclick="fetchPrices()" class="refresh-btn">Refresh</button>
+      </section>
+      <section id="sources">
+        <h1>Sources</h1>
+        <ul id="sources-list"></ul>
+      </section>
+      <section id="settings">
+        <h1>Settings</h1>
+        <form id="settings-form">
+          <label>
+            Update Interval (sec):
+            <input type="number" id="interval" min="1" value="10" />
+          </label>
+          <button type="submit">Save</button>
+        </form>
+      </section>
+    </main>
 
-        h2 {
-            color: #444;
-        }
-
-        .price {
-            font-size: 24px;
-            margin: 15px 0;
-        }
-
-        .green {
-            color: green;
-        }
-
-        .red {
-            color: red;
-        }
-    </style>
-</head>
-
-<body>
-    <div>
-        <h2>Live Crypto Prices</h2>
-        <div class="price">BTC: <span id="btc-price">Loading...</span></div>
-        <div class="price">ETH: <span id="eth-price">Loading...</span></div>
-        <div class="price">BNB: <span id="bnb-price">Loading...</span></div>
-    </div>
-
-    <script>
-        const socket = new WebSocket("ws://localhost:5000/ws/live-data/");
-
-        const previousPrices = {
-            BTCUSDT: null,
-            ETHUSDT: null,
-            BNBUSDT: null
-        };
-
-        function updatePrice(id, symbol, newPrice) {
-            const span = document.getElementById(id);
-            const oldPrice = previousPrices[symbol];
-
-            span.textContent = parseFloat(newPrice).toFixed(4);
-
-            if (oldPrice !== null) {
-                if (newPrice > oldPrice) {
-                    span.className = "green";
-                } else if (newPrice < oldPrice) {
-                    span.className = "red";
-                } else {
-                    span.className = "";
-                }
-            }
-
-            previousPrices[symbol] = newPrice;
-        }
-
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            updatePrice("btc-price", "BTCUSDT", data.BTCUSDT);
-            updatePrice("eth-price", "ETHUSDT", data.ETHUSDT);
-            updatePrice("bnb-price", "BNBUSDT", data.BNBUSDT);
-        };
-    </script>
-</body>
-
+    <footer>Real-Time Aggregator &copy; 2025</footer>
+    <script src="script.js"></script>
+  </body>
 </html>

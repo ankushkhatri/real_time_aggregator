@@ -1,4 +1,6 @@
 django>=4.0
 channels
 channels-redis
-fastapi
+fastapi>=0.95
+uvicorn>=0.22
+django-cors-headers
